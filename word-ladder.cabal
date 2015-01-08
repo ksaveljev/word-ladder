@@ -17,10 +17,17 @@ cabal-version:       >=1.10
 
 executable fatvat
   main-is:             WordLadderFatvat.hs
-  -- other-modules:       
-  -- other-extensions:    
   build-depends:       base >=4.7 && <4.8
                      , containers
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+  ghc-options:         -O2 -Wall
+
+executable gbacon
+  main-is:             WordLadderGbacon.hs
+  build-depends:       base >=4.7 && <4.8
+                     , containers
+                     , mtl
   hs-source-dirs:      src
   default-language:    Haskell2010
   ghc-options:         -O2 -Wall
