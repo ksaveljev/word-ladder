@@ -31,3 +31,10 @@ executable gbacon
   hs-source-dirs:      src
   default-language:    Haskell2010
   ghc-options:         -O2 -Wall
+
+executable darkotter
+  main-is:             WordLadderDarkOtter.hs
+  build-depends:       base >=4.7 && <4.8
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+  ghc-options:         -O2 -Wall
