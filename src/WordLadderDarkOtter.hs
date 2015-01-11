@@ -25,5 +25,17 @@ buildTrie xs = Trie hasEmpty steps
         (same, different) = span ((first ==) . head) ys
         next = buildTrie $ fmap tail $ y : same
 
+foldTrie :: (Eq a) => ([a] -> b -> b) -> b -> Trie a -> b
+foldTrie f = foldTrie' id
+  where
+    foldTrie' before e (Trie yield children) = if yield then f (before []) m else m
+      where
+        m = foldDigits' before e children
+
+    foldDigits' _ e [] = e
+    foldDigits' before e (x:xs) = foldDigit' before (foldDigits' before e xs) x
+
+    foldDigit' before e (Node c trie) = foldTrie' (before . (c:)) e trie
+
 main :: IO ()
 main = undefined
