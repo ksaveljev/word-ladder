@@ -1,4 +1,5 @@
 import Prelude hiding (foldl, foldr, foldl1, foldr1, (.), id)
+import Data.Foldable (foldl')
 import Control.Arrow ((>>>))
 import Control.Category (id, (.))
 
@@ -36,6 +37,14 @@ foldTrie f = foldTrie' id
     foldDigits' before e (x:xs) = foldDigit' before (foldDigits' before e xs) x
 
     foldDigit' before e (Node c trie) = foldTrie' (before . (c:)) e trie
+
+findExact :: (Eq a) => [a] -> Trie a -> [[a]]
+findExact k t = replicate (count k 0 t) k
+  where
+    count []     n (Trie yield        _) = if yield then n + 1 else n
+    count (x:xs) n (Trie _     children) = foldl' (folder x xs) n children
+
+    folder x xs n (Node c trie) = if x == c then count xs n trie else n
 
 main :: IO ()
 main = undefined
