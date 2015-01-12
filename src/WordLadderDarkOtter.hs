@@ -1,7 +1,6 @@
 import Prelude hiding (foldl, foldr, foldl1, foldr1, (.), id)
 import Data.Foldable (foldl')
-import Control.Arrow ((>>>))
-import Control.Category (id, (.))
+import Control.Category (id, (.), (>>>))
 
 data Trie a = Trie !Bool [Node a] deriving (Show, Eq)
 data Node a = Node !a    (Trie a) deriving (Show, Eq)
