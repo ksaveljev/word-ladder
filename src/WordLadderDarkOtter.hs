@@ -1,5 +1,5 @@
 import Prelude hiding (foldl, foldr, foldl1, foldr1, (.), id)
-import Data.Foldable (foldl')
+import Data.Foldable (foldl', foldr)
 import Control.Category (id, (.), (>>>))
 
 data Trie a = Trie !Bool [Node a] deriving (Show, Eq)
@@ -44,6 +44,16 @@ findExact k t = replicate (count k 0 t) k
     count (x:xs) n (Trie _     children) = foldl' (folder x xs) n children
 
     folder x xs n (Node c trie) = if x == c then count xs n trie else n
+
+findFuzzy :: (Eq a, Integral n) => n -> [a] -> Trie a -> [[a]]
+findFuzzy = findFuzzy' id []
+  where
+    findFuzzy' b e 0 k t = (fmap b $ findExact k t) ++ e
+    findFuzzy' b e _ [] (Trie yield _) = if yield then b [] :e else e
+    findFuzzy' b e n (x:xs) (Trie _ children) = foldr (folder b x xs n) e children
+
+    folder b x xs n (Node c trie) e = n' `seq` findFuzzy' (b . (c:)) e n' xs trie
+      where n' = if x == c then n else n - 1
 
 main :: IO ()
 main = undefined
