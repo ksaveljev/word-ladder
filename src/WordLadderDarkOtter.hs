@@ -55,5 +55,12 @@ findFuzzy = findFuzzy' id []
     folder b x xs n (Node c trie) e = n' `seq` findFuzzy' (b . (c:)) e n' xs trie
       where n' = if x == c then n else n - 1
 
+distance :: (Eq a, Integral n) => [a] -> [a] -> n
+distance l r = distance' l r 0
+  where
+    distance' [] [] n = n
+    distance' (l:ls) (r:rs) n = distance' ls rs $! n'
+      where n' = if l == r then n else n + 1
+
 main :: IO ()
 main = undefined
