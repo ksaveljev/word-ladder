@@ -1,6 +1,9 @@
 import Prelude hiding (foldl, foldr, foldl1, foldr1, (.), id)
-import Data.Foldable (foldl', foldr)
+import Data.Foldable (foldl', foldr, forM_)
+import Data.Monoid (mempty)
 import Control.Category (id, (.), (>>>))
+import Control.Applicative ((<$>))
+import System.Environment (getArgs)
 
 data Trie a = Trie !Bool [Node a] deriving (Show, Eq)
 data Node a = Node !a    (Trie a) deriving (Show, Eq)
@@ -62,5 +65,26 @@ distance l r = distance' l r 0
     distance' (l:ls) (r:rs) n = distance' ls rs $! n'
       where n' = if l == r then n else n + 1
 
+ladders :: (Ord a, Integral n) => Trie a -> [a] -> [a] -> [(n, [[a]])]
+ladders trie from target = consume $ push [(distance from target, 0, [from])] mempty
+  where
+    consume queue = maybe [] produce $ pop queue
+    produce ((_, cost, p@(mid:_)), queue) = if mid == target
+                                              then (cost, p) : consume queue
+                                              else consume nextQueue
+      where
+        nextQueue = push (stepFunc <$> findFuzzy 1 mid trie) queue
+
+        stepFunc step = c `seq` e `seq` (e, c, step:p)
+          where
+            c = cost + 1
+            e = c + distance step target
+
 main :: IO ()
-main = undefined
+main = do
+    (from:to:_) <- getArgs
+    let answers = ladders wordTrie from to
+    let best = takeWhile ((==) (fst $ head $ answers) . fst) answers
+    forM_ fmap (reverse . snd) best $ \answer -> do
+      putStrLn "---------"
+      forM_ answer $ show >>> putStrLn
